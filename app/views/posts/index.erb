@@ -1,0 +1,11 @@
+<h1>All Posts</h1>
+<hr>
+<% @posts.each do |post| %>
+    <ul>
+        <li>
+            <h3><%= link_to post.title, post_path(post) %></h3>
+            <p><%= post.summary %></p>
+            <h4><%= post.category %></h4>
+        </li>
+    </ul>
+<% end %>
