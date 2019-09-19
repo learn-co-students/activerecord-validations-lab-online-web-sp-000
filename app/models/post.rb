@@ -1,17 +1,23 @@
 class Post < ActiveRecord::Base
+  include ActiveModel::Validations
   validates :title, presence: true
   validates :content, length: {minimum: 250}
   validates :summary, length: {maximum: 250}
   validates :category, inclusion: {in: %w(Fiction Non-Fiction)}
+  validate :is_clickbait?
 
 
-  validates_with MyValidator
-end
+  CLICKBAIT_PATTERNS = [
+    /Won't Believe/i,
+    /Secret/i,
+    /Top [0-9]*/i,
+    /Guess/i
+  ]
 
-class MyValidator < ActiveModel::Validator
-  def validate(record)
-    unless record.title.includes?(%w("Won't Believe" "Secret" "Top [number]"  "Guess"))
-      record.errors[:name] << 'Not a good title!'
+  def is_clickbait?
+    if CLICKBAIT_PATTERNS.none? { |pat| pat.match title }
+      errors.add(:title, "must be clickbait")
     end
   end
+
 end
